@@ -1,4 +1,4 @@
-package com.study.taskscheduling.quartz.helloworld;
+package com.study.taskscheduling.quartz._1helloworld;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
