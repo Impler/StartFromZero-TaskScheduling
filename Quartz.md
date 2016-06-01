@@ -89,3 +89,11 @@ Cron表达式由7部分组成，空格间隔
 年：	^((\\*?)|2[0-9]{3}([,|\\-|\\/]2[0-9]{3})?)$
 
 
+Job Store
+Job Store用于保存jobs, triggers, calendars对应数据。JobStore的配置应在Quartz的配置文件中配置，只能操作JobStore接口，不要直接操作JobStore实例
+JobStroe的实现包括
+- RAMJobStore：把所有数据保存在内容中，速度快但没能持久化。配置org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+- JDBCJobStore：通过jdbc把数据保存在数据库中。
+- TerracottaJobStore：
+
+
