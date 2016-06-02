@@ -45,7 +45,7 @@ Job下面又派生出两个子接口：InterruptableJob和StatefulJob
 InterruptableJob：  
 StatefulJob：有状态Job，标识性接口，没有操作方法。StatefulJob与普通的Job（无状态Job）从根本上有两点不同：  
 	1. JobDataMap是共享的，即在Job中对JobDataMap的操作，将会被保存下来，其他Job拿到的将是被修改过的JobDataMap。  
-	2. 基于第一条原因，StatefulJob是不允许并发执行的。
+	2. 基于第一条原因，StatefulJob是不允许并发执行的。  
 StatefulJob已被DisallowConcurrentExecution/PersistJobDataAfterExecution注解取代
 ##Trigger
 ##
