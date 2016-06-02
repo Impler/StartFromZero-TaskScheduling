@@ -8,15 +8,38 @@
 - JobStore 接口，存放Job
 
 ##Scheduler
-Scheduler是一个任务调度器，保存JobDetail和Trigger的信息。 在trigger触发时，执行特定任务。
-Scheduler由SchedulerFactory创建，存储在单例的SchedulerRepository中。  
-![Schedualer Repository类图](../resources/quartz/scheduler_repository.png "Schedualer Repository类图")  
+Scheduler是一个任务调度器，保存JobDetail和Trigger的信息。 在Trigger触发时，执行特定任务。
+
+###创建
+Scheduler由SchedulerFactory创建。  
 SchedulerFactory有两个默认实现StdSchedulerFactory和DirectSchedulerFactory。  
-![Schedualer Factory继承体系](../resources/quartz/scheduler_factory.png "Schedualer Factory继承体系")  
-StdSchedulerFactory  
+![Schedualer Factory继承体系](../resources/quartz/images/scheduler_factory.png "Schedualer Factory继承体系")  
+
+StdSchedulerFactory
 DirectSchedulerFactory
 
+###存储
+Scheduler存储在单例的SchedulerRepository中。    
+![Schedualer Repository类图](../resources/quartz/images/scheduler_repository.png "Schedualer Repository类图")  
+ 
+###生命周期
+Scheduler的生命周期开始于start()，结束于shutdown()方法。  
+![Schedualer 生命周期](../resources/quartz/images/scheduler_lifecycle.png "Schedualer 生命周期")  
+
+###核心方法
+Scheduler的核心功能就是操作Job、Trigger、Calendar、Listener等。包括addXXX、deleteXXX、pauseXXX、resumeXXX等。  
+
+![Schedualer 核心方法](../resources/quartz/images/scheduler_core.png "Schedualer 核心方法")  
+
 ##Job 
+Job就是定时任务实实在在执行的内容，足够单纯，仅仅包含一个执行方法:  
+```java  
+void execute(JobExecutionContext context) throws JobExecutionException;  
+```  
+JobExecutionContext对象包含了当前任务执行的上下文环境，包括Job、Trigger以及jobDataMap等。  
+![Job运行时环境](../resources/quartz/images/job_execution_context.png "Job运行时环境")  
+
+![Job体系结构](../resources/quartz/images/job.png "Job体系结构")  
 ##Trigger
 ##
 
