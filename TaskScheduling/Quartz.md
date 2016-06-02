@@ -31,15 +31,22 @@ Scheduler的核心功能就是操作Job、Trigger、Calendar、Listener等。包
 
 ![Schedualer 核心方法](../resources/quartz/images/scheduler_core.png "Schedualer 核心方法")  
 
-##Job 
+##Job&JobDetail
 Job就是定时任务实实在在执行的内容，足够单纯，仅仅包含一个执行方法:  
 ```java  
 void execute(JobExecutionContext context) throws JobExecutionException;  
 ```  
-JobExecutionContext对象包含了当前任务执行的上下文环境，包括Job、Trigger以及jobDataMap等。  
+JobExecutionContext对象包含了当前任务执行的上下文环境，包括JobDetail、Trigger以及jobDataMap等。  
 ![Job运行时环境](../resources/quartz/images/job_execution_context.png "Job运行时环境")  
-
+Job的执行并不是孤立封闭的，需用与外界交互。JobDataMap是一种扩展的Map<String，Object>结构，就是用来在任务调度器与任务执行之间传递数据。如果Job中包含了与JobDataMap中key值相对应的setter方法，那么Scheduler容器将会在当前Job创建后自动调用该setter方法，完成数据传递，而不用hardcode的从map中取值。  
+Job的创建是由Scheduler来完成，每次Trigger触发时，都会创建一个新的Job对象。因此JobExecutionContext.JobDataMap只是外部Scheduler容器中JobDataMap的一个拷贝，即便修改Job中的JobDataMap也只是在当前Job执行的环境中生效，并不会对外部产生任何影响。  
+Job下面又派生出两个子接口：InterruptableJob和StatefulJob  
 ![Job体系结构](../resources/quartz/images/job.png "Job体系结构")  
+InterruptableJob：  
+StatefulJob：有状态Job，标识性接口，没有操作方法。StatefulJob与普通的Job（无状态Job）从根本上有两点不同：  
+	1. JobDataMap是共享的，即在Job中对JobDataMap的操作，将会被保存下来，其他Job拿到的将是被修改过的JobDataMap。  
+	2. 基于第一条原因，StatefulJob是不允许并发执行的。
+StatefulJob已被DisallowConcurrentExecution/PersistJobDataAfterExecution注解取代
 ##Trigger
 ##
 
