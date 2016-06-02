@@ -2,6 +2,7 @@ package com.study.taskscheduling.quartz._1helloworld;
 
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
@@ -32,7 +33,12 @@ public class QuartzHelloWorld {
 
 		// Tell quartz to schedule the job using our trigger
 		sched.scheduleJob(job, trigger);
-		
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		sched.deleteJob(new JobKey("myJob", "group1"));
 		sched.start();
 	}
 }
