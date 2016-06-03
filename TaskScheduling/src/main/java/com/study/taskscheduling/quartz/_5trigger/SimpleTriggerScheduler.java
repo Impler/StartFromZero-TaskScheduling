@@ -1,4 +1,4 @@
-package com.study.taskscheduling.quartz._3trigger;
+package com.study.taskscheduling.quartz._5trigger;
 
 import org.quartz.DateBuilder;
 import org.quartz.DateBuilder.IntervalUnit;

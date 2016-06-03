@@ -11,7 +11,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.study.taskscheduling.quartz._1helloworld.HelloJob;
 import com.study.taskscheduling.quartz._4joblistener.MyJobListener;
-import com.study.taskscheduling.quartz._5triggerlistener.MyTriggerListener;
+import com.study.taskscheduling.quartz._7triggerlistener.MyTriggerListener;
 
 public class SchedulerListener {
 

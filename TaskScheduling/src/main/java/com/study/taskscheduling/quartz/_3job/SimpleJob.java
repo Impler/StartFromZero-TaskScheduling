@@ -1,4 +1,4 @@
-package com.study.taskscheduling.quartz._2job;
+package com.study.taskscheduling.quartz._3job;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -21,17 +21,20 @@ public class SimpleJob implements Job{
 		// 获取JobDetail中的JobDataMap
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		
+		System.out.println("1 比较JobDetail创建时绑定的JobDataMap与Job中得到的是否为同一个对象：" + dataMap + "<->" +context.getJobDetail().getJobDataMap());
+		
 		// 获取JobDetail中的JobDataMap与Trigger中的JobDataMap的并集，如果key重复，后者覆盖前者
 		JobDataMap mergeDataMap = context.getMergedJobDataMap();
-		
 		// 只在当前方法中起效
 		dataMap.put("data1", "data1-value-modify");
+		//TODO 很奇怪，JobDataMap与1处的对象不一致
+		System.out.println("2 比较JobDetail创建时绑定的JobDataMap与Job中得到的是否为同一个对象：" + dataMap + "<->" +context.getJobDetail().getJobDataMap());
 		
-		System.out.println(dataMap + ":" + this.data + "," 
+		System.out.println("jobDatamMap: " + dataMap + ":" + this.data + "," 
 				+ dataMap.getString("data1") + "," 
 				+ dataMap.getString("data2"));
 		
-		System.out.println(mergeDataMap + ":" + this.data + "," 
+		System.out.println("mergedJobDataMap: " + mergeDataMap + ":" + this.data + "," 
 				+ mergeDataMap.getString("data1") + "," 
 				+ mergeDataMap.getString("data2") + "," 
 				+ mergeDataMap.getString("data3"));

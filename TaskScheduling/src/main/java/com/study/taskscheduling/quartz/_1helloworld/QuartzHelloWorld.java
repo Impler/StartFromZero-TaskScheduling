@@ -33,12 +33,12 @@ public class QuartzHelloWorld {
 
 		// Tell quartz to schedule the job using our trigger
 		sched.scheduleJob(job, trigger);
+		sched.start();
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		sched.deleteJob(new JobKey("myJob", "group1"));
-		sched.start();
 	}
 }

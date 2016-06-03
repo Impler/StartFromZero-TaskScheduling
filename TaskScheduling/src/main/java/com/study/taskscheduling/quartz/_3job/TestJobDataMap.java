@@ -1,4 +1,4 @@
-package com.study.taskscheduling.quartz._2job;
+package com.study.taskscheduling.quartz._3job;
 
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -11,30 +11,34 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
-public class JobScheduler {
+/**
+ * quartz等多线程程序无法使用junit测试，只能通过main方法
+ */
+public class TestJobDataMap {
 
-	public static void main(String[] args) throws SchedulerException{
+	public static void main(String[] args) throws SchedulerException {
 		
 		SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-		
 		Scheduler scheduler = schedulerFactory.getScheduler();
 		
+		SimpleScheduleBuilder scheBuilder = SimpleScheduleBuilder
+				.simpleSchedule()
+				.withIntervalInSeconds(1)
+				.repeatForever();
+
 		JobDataMap dataMap = new JobDataMap();
 		dataMap.put("data", "data-value");
 		
-		JobDetail job = JobBuilder.newJob(SimpleJob.class)
+		//简单无状态job
+		JobDetail simpleJob = JobBuilder.newJob(SimpleJob.class)
 					.withIdentity("simpleJob", "default")
 					.setJobData(dataMap)						//传递JobDataMap对象
 					.usingJobData("data1", "data1-value")		//或单个添加data
 					.usingJobData("data2", "data2-value")	
 					.build();
 		
-		SimpleScheduleBuilder scheBuilder = SimpleScheduleBuilder
-					.simpleSchedule()
-					.withIntervalInSeconds(3)
-					.repeatForever();
 		
-		Trigger trigger = TriggerBuilder.newTrigger()
+		Trigger simpleTrigger = TriggerBuilder.newTrigger()
 					.startNow()
 					.withIdentity("simpleTrigger", "default")
 					//trigger中也可以包含JobDataMap，在Job的execute方法中可以得到JobDetail中的JobDataMap和Trigger中的JobDataMap的并集，如果重复，后者覆盖前者
@@ -43,10 +47,9 @@ public class JobScheduler {
 					.withSchedule(scheBuilder)
 					.build();
 		
-		scheduler.scheduleJob(job, trigger);
+		scheduler.scheduleJob(simpleJob, simpleTrigger);
 		
 		scheduler.start();
-		
-		System.out.println("比较JobDetail创建时绑定的JobDataMap与Job中得到的是否为同一个对象：" + job.getJobDataMap() + "====显然不是");
 	}
+
 }

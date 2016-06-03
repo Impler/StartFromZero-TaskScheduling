@@ -6,6 +6,11 @@ import org.quartz.JobExecutionException;
 
 public class HelloJob implements Job {
 
+	
+	public HelloJob() {
+		super();
+	}
+
 	@Override
 	public void execute(JobExecutionContext context)
 			throws JobExecutionException {

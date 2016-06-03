@@ -11,73 +11,73 @@ public class MySchedulerListener implements SchedulerListener {
 
 	@Override
 	public void jobScheduled(Trigger trigger) {
-		System.out.println("scheduler listener do jobScheduled");
+		System.out.println("scheduler listener do jobScheduled: " + trigger.getKey());
 
 	}
 
 	@Override
 	public void jobUnscheduled(TriggerKey triggerKey) {
-		System.out.println("scheduler listener do jobUnscheduled");
+		System.out.println("scheduler listener do jobUnscheduled: " + triggerKey);
 	}
 
 	@Override
 	public void triggerFinalized(Trigger trigger) {
-		System.out.println("scheduler listener do triggerFinalized");
+		System.out.println("scheduler listener do triggerFinalized: " + trigger.getKey());
 	}
 
 	@Override
 	public void triggerPaused(TriggerKey triggerKey) {
-		System.out.println("scheduler listener do triggerPaused");
+		System.out.println("scheduler listener do triggerPaused: " + triggerKey);
 	}
 
 	@Override
 	public void triggersPaused(String triggerGroup) {
-		System.out.println("scheduler listener do triggersPaused");
+		System.out.println("scheduler listener do triggersPaused: " + triggerGroup);
 	}
 
 	@Override
 	public void triggerResumed(TriggerKey triggerKey) {
-		System.out.println("scheduler listener do triggerResumed");
+		System.out.println("scheduler listener do triggerResumed: " + triggerKey);
 	}
 
 	@Override
 	public void triggersResumed(String triggerGroup) {
-		System.out.println("scheduler listener do triggersResumed");
+		System.out.println("scheduler listener do triggersResumed: " + triggerGroup);
 	}
 
 	@Override
 	public void jobAdded(JobDetail jobDetail) {
-		System.out.println("scheduler listener do jobAdded");
+		System.out.println("scheduler listener do jobAdded: " + jobDetail.getKey());
 	}
 
 	@Override
 	public void jobDeleted(JobKey jobKey) {
-		System.out.println("scheduler listener do jobDeleted");
+		System.out.println("scheduler listener do jobDeleted: " + jobKey);
 	}
 
 	@Override
 	public void jobPaused(JobKey jobKey) {
-		System.out.println("scheduler listener do jobPaused");
+		System.out.println("scheduler listener do jobPaused: " + jobKey);
 	}
 
 	@Override
 	public void jobsPaused(String jobGroup) {
-		System.out.println("scheduler listener do jobsPaused");
+		System.out.println("scheduler listener do jobsPaused: " + jobGroup);
 	}
 
 	@Override
 	public void jobResumed(JobKey jobKey) {
-		System.out.println("scheduler listener do jobResumed");
+		System.out.println("scheduler listener do jobResumed: " + jobKey);
 	}
 
 	@Override
 	public void jobsResumed(String jobGroup) {
-		System.out.println("scheduler listener do jobsResumed");
+		System.out.println("scheduler listener do jobsResumed: " + jobGroup);
 	}
 
 	@Override
 	public void schedulerError(String msg, SchedulerException cause) {
-		System.out.println("scheduler listener do schedulerError");
+		System.out.println("scheduler listener do schedulerError: " + msg);
 	}
 
 	@Override
