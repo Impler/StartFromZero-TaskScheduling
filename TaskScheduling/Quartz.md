@@ -78,9 +78,11 @@ Trigger描述了Job的触发规则。
 - Priority：当多个trigger拥有相同的触发时间，根据该属性来确定先后顺序，数值越大越靠前，默认5，可为正负数  
 - Misfire Instructions：没来得及执行的机制。同一时间trigger数量过多超过可获得的线程资源，导致部分trigger无法执行。不同类型的Trigger拥有不同的机制。当Scheduler启动时候，首先找到没来得及执行的trigger，再根据不同类型trigger各自的处理策略处理  
 - Calendar：Quartz Calendar类型而不是java.util.Calendar类型。用于排除Trigger日程表中的特定时间范围，比如原本每天执行的任务，排除非工作日  
+- 
 ###Trigger的分类
 ![Trigger的分类](../resources/quartz/images/trigger_hierarchy.png "Trigger的分类")  
 常见的两种Trigger为SimpleTrigger和CronTrigger.  
+
 ###SimpleTrigger
 SimpleTrigger支持在特定时间点一次性执行或延迟执行N次，使用TriggerBuilder和SimpleScheduleBuilder创建
 SimpleTrigger包含的属性为：  
@@ -88,6 +90,7 @@ SimpleTrigger包含的属性为：
 - endTime 如果指定的话，将会覆盖repeat count  
 - repeat count 重复次数 >=0 int  
 - repeat interval 时间间隔(毫秒) >=0 long  
+
 ###CronTrigger  
 CronTrigger支持多次重复性复杂情况，支持Cron表达式，使用TriggerBuilder和CronScheduleBuilder创建。  
 Cron表达式由7部分组成，分别是秒 分 时 日期 月份 星期 年（可选），空格间隔。  
