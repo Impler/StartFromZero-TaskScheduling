@@ -94,6 +94,7 @@ SimpleTrigger包含的属性为：
 ###CronTrigger  
 CronTrigger支持多次重复性复杂情况，支持Cron表达式，使用TriggerBuilder和CronScheduleBuilder创建。  
 Cron表达式由7部分组成，分别是秒 分 时 日期 月份 星期 年（可选），空格间隔。  
+
 |字段|允许值|允许的特殊字符|
 |:-:|:-:|:-:|
 |秒|0-59|, - * /|
