@@ -146,4 +146,39 @@ JobStroe的实现包括：
 ##代码解析
 ###创建Scheduler
 ![创建Scheduler](../resources/quartz/images/create_scheduler.png "创建Scheduler")  
-###
+###添加JobDetail和Trigger到JobStore
+####RAMJobStore
+![RAMJobStore](../resources/quartz/images/ram_job_store.png "RAMJobStore")  
+JobDetail的存储载体：  
+JobWrapper:  
+![JobWrapper](../resources/quartz/images/job_wrapper.png "JobWrapper")  
+```java
+// 以JobDetail的group为key，存储JobKey<->JobWrapper形式的Map结构的Map
+HashMap<String, HashMap<JobKey, JobWrapper>> jobsByGroup
+// 以JobKey为Key，存储JobWrapper的Map
+HashMap<JobKey, JobWrapper> jobsByKey
+```  
+Trigger的存储载体:  
+TriggerWrapper:  
+![TriggerWrapper](../resources/quartz/images/trigger_wrapper.png "TriggerWrapper")  
+Trigger的几种状态：  
+- STATE_WAITING（默认）: 等待触发
+- STATE_ACQUIRED：  
+- STATE_COMPLETE：  
+- STATE_PAUSED：  
+- STATE_BLOCKED：  
+- STATE_PAUSED_BLOCKED：  
+- STATE_ERROR：  
+
+```java
+// 存储所有的TriggerWrapper
+ArrayList<TriggerWrapper> triggers
+// 以Trigger的group为key，存储TriggerKey<->TriggerWrapper形式的Map结构的Map
+HashMap<String, HashMap<TriggerKey, TriggerWrapper>> triggersByGroup
+// 以TriggerKey为Key，存储TriggerWrapper
+HashMap<TriggerKey, TriggerWrapper> triggersByKey
+// 即将被触发的Trigger
+TreeSet<TriggerWrapper> timeTriggers
+```
+#####添加Job
+#####添加Trigger
