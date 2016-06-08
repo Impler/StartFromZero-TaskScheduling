@@ -79,6 +79,15 @@ Trigger描述了Job的触发规则。
 - Misfire Instructions：没来得及执行的机制。同一时间trigger数量过多超过可获得的线程资源，导致部分trigger无法执行。不同类型的Trigger拥有不同的机制。当Scheduler启动时候，首先找到没来得及执行的trigger，再根据不同类型trigger各自的处理策略处理  
 - Calendar：Quartz Calendar类型而不是java.util.Calendar类型。用于排除Trigger日程表中的特定时间范围，比如原本每天执行的任务，排除非工作日  
 
+###Trigger的几种状态
+- STATE_WAITING（默认）: 等待触发
+- STATE_ACQUIRED：  
+- STATE_COMPLETE：  
+- STATE_PAUSED：  
+- STATE_BLOCKED：  
+- STATE_PAUSED_BLOCKED：  
+- STATE_ERROR：  
+
 ###Trigger的分类
 ![Trigger的分类](../resources/quartz/images/trigger_hierarchy.png "Trigger的分类")  
 常见的两种Trigger为SimpleTrigger和CronTrigger.  
@@ -147,13 +156,9 @@ JobStroe的实现包括：
 - JDBCJobStore：通过jdbc把数据保存在数据库中  
 - TerracottaJobStore：  
 
-##代码解析
-###创建Scheduler
-![创建Scheduler](../resources/quartz/images/create_scheduler.png "创建Scheduler")  
-###添加JobDetail和Trigger到JobStore
-####RAMJobStore
+###RAMJobStore
 ![RAMJobStore](../resources/quartz/images/ram_job_store.png "RAMJobStore")  
-JobDetail的存储载体：  
+####JobDetail的存储载体：  
 JobWrapper:  
 ![JobWrapper](../resources/quartz/images/job_wrapper.png "JobWrapper")  
 ```java
@@ -162,18 +167,11 @@ HashMap<String, HashMap<JobKey, JobWrapper>> jobsByGroup
 // 以JobKey为Key，存储JobWrapper的Map
 HashMap<JobKey, JobWrapper> jobsByKey
 ```  
-Trigger的存储载体:  
+![jobstore_job](../resources/quartz/images/jobstore_ram_job.png "jobstore_job")  
+
+####Trigger的存储载体:  
 TriggerWrapper:  
 ![TriggerWrapper](../resources/quartz/images/trigger_wrapper.png "TriggerWrapper")  
-Trigger的几种状态：  
-- STATE_WAITING（默认）: 等待触发
-- STATE_ACQUIRED：  
-- STATE_COMPLETE：  
-- STATE_PAUSED：  
-- STATE_BLOCKED：  
-- STATE_PAUSED_BLOCKED：  
-- STATE_ERROR：  
-
 ```java
 // 存储所有的TriggerWrapper
 ArrayList<TriggerWrapper> triggers
@@ -184,5 +182,16 @@ HashMap<TriggerKey, TriggerWrapper> triggersByKey
 // 即将被触发的Trigger
 TreeSet<TriggerWrapper> timeTriggers
 ```
+![jobstore_trigger](../resources/quartz/images/jobstore_ram_trigger.png "jobstore_trigger")  
+
+###JDBCJobStore
+
+
+##代码解析
+###创建Scheduler
+![创建Scheduler](../resources/quartz/images/create_scheduler.png "创建Scheduler")  
+###添加JobDetail和Trigger到JobStore
+
+
 #####添加Job
 #####添加Trigger
