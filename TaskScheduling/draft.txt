@@ -1,0 +1,25 @@
+scheduler.scheduleJob(jobDetail, trigger)
+	- getJobStore().storeJobAndTrigger(jobDetail, trigger)
+		- storeJob(conn, newJob, (replaceExisting)false);
+			- existingJob = jobExists(conn, newJob.getKey()): SQL: SELECT JOB_NAME FROM QRTZ_JOB_DETAILS WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'myJob' AND JOB_GROUP = 'group1'
+			- existingJob && replaceExisting updateJobDetail(Connection conn, JobDetail job) : SQL: UPDATE QRTZ_JOB_DETAILS SET DESCRIPTION = null, JOB_CLASS_NAME = 'com.study.taskscheduling.quartz._1helloworld.HelloJob', IS_DURABLE = 0, IS_NONCONCURRENT = 0, IS_UPDATE_DATA = 0, REQUESTS_RECOVERY = 0, JOB_DATA = '[Job DataMap byte值]'  WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'myJob' AND JOB_GROUP = 'group1'
+			- else insertJobDetail(conn, newJob) : SQL : INSERT INTO QRTZ_JOB_DETAILS (SCHED_NAME, JOB_NAME, JOB_GROUP, DESCRIPTION, JOB_CLASS_NAME, IS_DURABLE, IS_NONCONCURRENT, IS_UPDATE_DATA, REQUESTS_RECOVERY, JOB_DATA)  VALUES('TestScheduler', 'myJob', 'group1', null, 'com.study.taskscheduling.quartz._1helloworld.HelloJob', 0, 0, 0, 0, '[Job DataMap byte值]')
+			
+        - storeTrigger(conn, newTrigger, newJob, (replaceExisting)false, Constants.STATE_WAITING, (forceState)false, (recovering)false);
+			- existingTrigger = triggerExists(conn, newTrigger.getKey()) : SQL : SELECT TRIGGER_NAME FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'myTrigger' AND TRIGGER_GROUP = 'group1'
+			- !forceState
+				- shouldBepaused = getDelegate().isTriggerGroupPaused(conn, newTrigger.getKey().getGroup()) : SQL : SELECT TRIGGER_GROUP FROM QRTZ_PAUSED_TRIGGER_GRPS WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_GROUP = 'group1'
+				- !shouldBepaused
+					- shouldBepaused = isTriggerGroupPaused(conn,ALL_GROUPS_PAUSED); SQL: SELECT TRIGGER_GROUP FROM QRTZ_PAUSED_TRIGGER_GRPS WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_GROUP = '_$_ALL_GROUPS_PAUSED_$_'
+					- shouldBepaused
+						- insertPausedTriggerGroup(conn, newTrigger.getKey().getGroup()); SQL : INSERT INTO QRTZ_PAUSED_TRIGGER_GRPS (SCHED_NAME, TRIGGER_GROUP) VALUES('TestScheduler', 'group1')
+			- job == null? job = retrieveJob(conn, newTrigger.getJobKey()); SQL: SELECT * FROM QRTZ_JOB_DETAILS WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'myJob' AND JOB_GROUP = 'group1'
+			- job.isConcurrentExectionDisallowed() && !recovering ? state = checkBlockedState(conn, job.getKey(), state); SQL: TODO
+			- existingTrigger? updateTrigger(conn, newTrigger, state, job); SQL: UPDATE QRTZ_TRIGGERS SET JOB_NAME = 'myJob', JOB_GROUP = 'group1', DESCRIPTION = null, NEXT_FIRE_TIME = 1465369967775, PREV_FIRE_TIME = -1, TRIGGER_STATE = 'PAUSED', TRIGGER_TYPE = 'SIMPLE', START_TIME = 1465369967775, END_TIME = 0, CALENDAR_NAME = null, MISFIRE_INSTR = 0, PRIORITY = 5 WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'myTrigger' AND TRIGGER_GROUP = 'group1'
+			- else insertTrigger(conn, newTrigger, state, job);  SQL: INSERT INTO QRTZ_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP, JOB_NAME, JOB_GROUP, DESCRIPTION, NEXT_FIRE_TIME, PREV_FIRE_TIME, TRIGGER_STATE, TRIGGER_TYPE, START_TIME, END_TIME, CALENDAR_NAME, MISFIRE_INSTR, JOB_DATA, PRIORITY)  VALUES('TestScheduler', 'myTrigger', 'group1', 'myJob', 'group1', null, 1465369967775, -1, 'PAUSED', 'SIMPLE', 1465369967775, 0, null, 0, x'', 5)
+			
+			
+			INSERT INTO QRTZ_SIMPLE_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP, REPEAT_COUNT, REPEAT_INTERVAL, TIMES_TRIGGERED)  VALUES('TestScheduler', 'myTrigger', 'group1', -1, 2000, 0)
+			
+			
+			storeJob(Connection conn, JobDetail newJob, boolean replaceExisting)
