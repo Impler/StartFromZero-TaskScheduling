@@ -38,6 +38,12 @@ public class SchedulerThread extends Thread {
 				}
 				
 				System.out.println("do business");
+				// 模拟业务耗时
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				// 检索待执行的triggers trigger.nextFireTime 时间范围 <= (当前时间  + idleTime)
 				
 				// 遍历trigger，触发规则时间

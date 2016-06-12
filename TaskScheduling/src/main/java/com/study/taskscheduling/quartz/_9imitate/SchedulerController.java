@@ -15,6 +15,14 @@ public class SchedulerController {
 		}
 		System.out.println("结束暂停");
 		thread.togglePause(false);
+		
+		// n秒后，暂定任务
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		thread.togglePause(true);
 	}
 
 }

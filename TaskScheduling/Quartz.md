@@ -141,13 +141,13 @@ Cron表达式由7部分组成，分别是秒 分 时 日期 月份 星期 年（
 - "0 15 10 ? * 6#3" 每月的第三个星期五上午10:15触发   
 
 定时器正则表达式验证  
-- 秒：^(\\*|[0-5]?[0-9]([,|\\-|\\/][0-5]?[0-9])?)$  
-- 分：^(\\*|[0-5]?[0-9]([,|\\-|\\/][0-5]?[0-9])?)$  
-- 时：^(\\*|([0-1]?[0-9]?|2[0-3])([,|\\-|\\/]([0-1]?[0-9]|2[0-3]))?)$  
-- 日期：^(\\*|\\?|([1-9]|[1-2][0-9]|3[0-1])[CLW]?|[CLW]|LW)$  
-- 月份：^((\\*|[1-9]|(1[0-2]))([,|\\-|\\/]([1-9]|(1[0-2])))?)$  
-- 星期：^(\\*|L|\\?|[1-7](([,|\\-|\\/|\\#][1-7])?|[LC]))$  
-- 年：^((\\*?)|2[0-9]{3}([,|\\-|\\/]2[0-9]{3})?)$  
+<pre>秒：^(\\*|[0-5]?[0-9]([,|\\-|\\/][0-5]?[0-9])?)$  
+分：^(\\*|[0-5]?[0-9]([,|\\-|\\/][0-5]?[0-9])?)$  
+时：^(\\*|([0-1]?[0-9]?|2[0-3])([,|\\-|\\/]([0-1]?[0-9]|2[0-3]))?)$  
+日期：^(\\*|\\?|([1-9]|[1-2][0-9]|3[0-1])[CLW]?|[CLW]|LW)$  
+月份：^((\\*|[1-9]|(1[0-2]))([,|\\-|\\/]([1-9]|(1[0-2])))?)$  
+星期：^(\\*|L|\\?|[1-7](([,|\\-|\\/|\\#][1-7])?|[LC]))$  
+年：^((\\*?)|2[0-9]{3}([,|\\-|\\/]2[0-9]{3})?)$</pre>  
 
 ##Job Store
 Job Store用于保存jobs, triggers对应数据。JobStore的配置应在Quartz的配置文件中配置，代码中应该避免直接操作JobStore实例  
@@ -190,8 +190,16 @@ TreeSet<TriggerWrapper> timeTriggers
 ##代码解析
 ###创建Scheduler
 ![创建Scheduler](../resources/quartz/images/create_scheduler.png "创建Scheduler")  
-###添加JobDetail和Trigger到JobStore
 
-
-#####添加Job
+###JobStore
+####TransactionCallback接口
+TransactionCallback接口提供业务执行的事务场景，用于执行特定的数据库CRUD JobDetail、Trigger等操作，只关心做什么，事务的控制交由调用者来管理。  
+TransactionCallback接口结构图：  
+![TransactionCallback接口](../resources/quartz/images/jobstore_transaction_callback.png "TransactionCallback接口")  
+TransactionCallback接口实例：  
+![TransactionCallback接口实例](../resources/quartz/images/jobstore_transaction_callback_code.png "TransactionCallback接口实例")  
+TransactionCallback接口调用：  
+![TransactionCallback接口调用](../resources/quartz/images/jobstore_transaction_caller_code.png "TransactionCallback接口调用")  
+#####添加JobDetail
+![添加JobDetail](../resources/quartz/images/jdbcjobstore_add_job.png "添加JobDetail")  
 #####添加Trigger
