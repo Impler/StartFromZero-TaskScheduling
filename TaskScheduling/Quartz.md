@@ -201,5 +201,59 @@ TransactionCallback接口实例：
 TransactionCallback接口调用：  
 ![TransactionCallback接口调用](../resources/quartz/images/jobstore_transaction_caller_code.png "TransactionCallback接口调用")  
 #####添加JobDetail
-![添加JobDetail](../resources/quartz/images/jdbcjobstore_add_job.png "添加JobDetail")  
+![添加JobDetail](../resources/quartz/images/jdbcjobstore_store_job.png "添加JobDetail")  
+SQL Detail  
+- SELECT_JOB_EXISTENCE  
+```SQL
+SELECT JOB_NAME FROM QRTZ_JOB_DETAILS WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'myJob' AND JOB_GROUP = 'group1'
+```
+- UPDATE_JOB_DETAIL  
+```SQL
+UPDATE QRTZ_JOB_DETAILS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'myJob' AND JOB_GROUP = 'group1'
+```
+- INSERT_JOB_DETAIL  
+```SQL
+INSERT INTO QRTZ_JOB_DETAILS (SCHED_NAME, JOB_NAME, JOB_GROUP, DESCRIPTION, JOB_CLASS_NAME, IS_DURABLE, IS_NONCONCURRENT, IS_UPDATE_DATA, REQUESTS_RECOVERY, JOB_DATA)  VALUES(XXX)
+```
+#####暂停JobDetail
+![暂停JobDetail](../resources/quartz/images/jdbcjobstore_pause_job.png "暂停JobDetail")  
+SQL Detail
+- SELECT_TRIGGERS_FOR_JOB  
+```SQL
+ SELECT TRIGGER_NAME, TRIGGER_GROUP FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'crudJob' AND JOB_GROUP = 'default'
+```
+- SELECT_TRIGGER_STATE  
+```SQL
+ SELECT TRIGGER_STATE FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
+```
+- UPDATE_TRIGGER_STATE  
+```SQL
+ UPDATE QRTZ_TRIGGERS SET TRIGGER_STATE = 'PAUSED/PAUSED_BLOCKED' WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
+```
 #####添加Trigger
+![添加Trigger](../resources/quartz/images/jdbcjobstore_store_trigger.png "添加Trigger")  
+SQL Detail  
+- SELECT_TRIGGER_EXISTENCE  
+```SQL
+SELECT TRIGGER_NAME FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'myTrigger' AND TRIGGER_GROUP = 'group1'
+```
+- SELECT_PAUSED_TRIGGER_GROUP  
+```SQL
+SELECT TRIGGER_GROUP FROM QRTZ_PAUSED_TRIGGER_GRPS WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_GROUP = 'group1'
+```
+- INSERT_PAUSED_TRIGGER_GROUP  
+```SQL
+INSERT INTO QRTZ_PAUSED_TRIGGER_GRPS (SCHED_NAME, TRIGGER_GROUP) VALUES('TestScheduler', 'group1')
+```
+- SELECT_FIRED_TRIGGERS_OF_JOB  
+```SQL
+SELECT * FROM QRTZ_FIRED_TRIGGERS WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'myJob' AND JOB_GROUP = 'group1'
+```
+- UPDATE_TRIGGER  
+```SQL
+UPDATE QRTZ_TRIGGERS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'myTrigger' AND TRIGGER_GROUP = 'group1'
+```
+- INSERT_TRIGGER  
+```SQL
+INSERT INTO QRTZ_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP, JOB_NAME, JOB_GROUP, DESCRIPTION, NEXT_FIRE_TIME, PREV_FIRE_TIME, TRIGGER_STATE, TRIGGER_TYPE, START_TIME, END_TIME, CALENDAR_NAME, MISFIRE_INSTR, JOB_DATA, PRIORITY)  VALUES(XXX)
+```
