@@ -11,6 +11,8 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.study.taskscheduling.quartz._1helloworld.HelloJob;
+
 public class TestJobCRUD {
 
 	public static void main(String[] args) throws SchedulerException {
@@ -20,7 +22,7 @@ public class TestJobCRUD {
 
 		JobKey jobKey = new JobKey("crudJob", "default");
 
-		JobDetail job = JobBuilder.newJob(MyInterruptableJob.class)
+		JobDetail job = JobBuilder.newJob(HelloJob.class)
 				.withIdentity(jobKey).build();
 
 		SimpleScheduleBuilder scheBuilder = SimpleScheduleBuilder
@@ -68,5 +70,6 @@ public class TestJobCRUD {
 		}
 		System.out.println("删除...");
 		scheduler.deleteJob(jobKey);
+		
 	}
 }

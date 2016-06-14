@@ -215,8 +215,12 @@ UPDATE QRTZ_JOB_DETAILS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME 
 ```SQL
 INSERT INTO QRTZ_JOB_DETAILS (SCHED_NAME, JOB_NAME, JOB_GROUP, DESCRIPTION, JOB_CLASS_NAME, IS_DURABLE, IS_NONCONCURRENT, IS_UPDATE_DATA, REQUESTS_RECOVERY, JOB_DATA)  VALUES(XXX)
 ```
-#####暂停JobDetail
-![暂停JobDetail](../resources/quartz/images/jdbcjobstore_pause_job.png "暂停JobDetail")  
+#####暂停Job
+![暂停Job](../resources/quartz/images/jdbcjobstore_pause_job.png "暂停Job")  
+*Trigger的状态*： 
+当前Job下所有Trigger:  
+- 如果当前Trigger的状态为Waiting或Acquired，则改为Paused
+- 如果当前Trigger的状态为Blocked，则改为Paused_Blocked
 SQL Detail
 - SELECT_TRIGGERS_FOR_JOB  
 ```SQL
@@ -230,8 +234,34 @@ SQL Detail
 ```SQL
  UPDATE QRTZ_TRIGGERS SET TRIGGER_STATE = 'PAUSED/PAUSED_BLOCKED' WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
 ```
+#####重新开启Job
+![重新开启Job](../resources/quartz/images/jdbcjobstore_resume_job.png "重新开启Job")  
+*Trigger的状态*:  
+当前Job下所有Trigger:  
+- 将当前Trigger的状态改为Waiting或Blocked
+
+SQL Detail  
+- SELECT_TRIGGERS_FOR_JOB  
+```SQL
+ SELECT TRIGGER_NAME, TRIGGER_GROUP FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME = 'crudJob' AND JOB_GROUP = 'default'
+```
+- SELECT_TRIGGER_STATUS  
+```SQL
+ SELECT TRIGGER_STATE, NEXT_FIRE_TIME, JOB_NAME, JOB_GROUP FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
+```
+- UPDATE_TRIGGER_STATE_FROM_STATE  
+```SQL
+UPDATE QRTZ_TRIGGERS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
+```
 #####添加Trigger
 ![添加Trigger](../resources/quartz/images/jdbcjobstore_store_trigger.png "添加Trigger")  
+*注意*：  
+- 被暂停的Group存放在QRTZ_PAUSED_TRIGGER_GRPS表中，如果所有的Group都暂停，那么表中TRIGGER_GROUP字段值为“_$_ALL_GROUPS_PAUSED_$_”  
+*Trigger的状态*：  
+- 新建的Trigger默认为Waiting状态
+- 如果Trigger所属组的状态为Pause或所有Trigger组的状态为Pause，则Trigger的状态为Paused
+- 如果当前Trigger不允许并发执行，则要查看该Job已执行过的Trigger状态(该Job上一次执行的Trigger的状态)，如果是Paused，则当前状态为PAUSED_BLOCKED，否则为BLOCKED
+
 SQL Detail  
 - SELECT_TRIGGER_EXISTENCE  
 ```SQL
