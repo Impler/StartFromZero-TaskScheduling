@@ -24,7 +24,7 @@ public class CronTriggerScheduler {
 		//0s,30s执行
 //		scheduler.scheduleJob(getJobDetail(), getTrigger("0s,30s执行", "0,30 * * * * ?"));
 		//从第三秒开始，每5秒一次
-//		scheduler.scheduleJob(getJobDetail(), getTrigger("从第三秒开始，每5秒一次", "30/5 * * * * ?"));
+//		scheduler.scheduleJob(getJobDetail(), getTrigger("从第三秒开始，每5秒一次", "3/5 * * * * ?"));
 		
 		//每天16点50分执行
 		scheduler.scheduleJob(getJobDetail(), getTrigger("每天16点50分执行一次"));
