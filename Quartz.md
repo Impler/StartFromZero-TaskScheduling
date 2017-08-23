@@ -13,7 +13,7 @@ Scheduler是一个任务调度器，保存JobDetail和Trigger的信息。 在Tri
 ### 创建
 Scheduler由SchedulerFactory创建。  
 SchedulerFactory有两个默认实现StdSchedulerFactory和DirectSchedulerFactory。  
-![Schedualer Factory继承体系](../resources/quartz/images/scheduler_factory.png "Schedualer Factory继承体系")  
+![Schedualer Factory继承体系](resources/quartz/images/scheduler_factory.png "Schedualer Factory继承体系")  
 Scheduler的创建过程包括：
 - 1. 读取配置文件, 配置文件中需要配置scheduler、线程池、jobStore、jobListener、triggerListenner、插件等。配置文件的读取过程如下：
 	- 读取参数系统参数System中配置的org.quartz.properties指定的文件
@@ -24,16 +24,16 @@ Scheduler的创建过程包括：
 
 ### 存储
 Scheduler存储在单例的SchedulerRepository中。    
-![Schedualer Repository类图](../resources/quartz/images/scheduler_repository.png "Schedualer Repository类图")  
+![Schedualer Repository类图](resources/quartz/images/scheduler_repository.png "Schedualer Repository类图")  
  
 ### 生命周期
 Scheduler的生命周期开始于其被创建时，结束于shutdown()方法调用。一旦对象创建完成，就可以用来操作Jobs和Triggers，包括添加、删除、查询等。但只有在Scheduler start()被调用后，才会按照Trigger定义的触发规则执行Job的内容。  
-![Schedualer 生命周期](../resources/quartz/images/scheduler_lifecycle.png "Schedualer 生命周期")  
+![Schedualer 生命周期](resources/quartz/images/scheduler_lifecycle.png "Schedualer 生命周期")  
 
 ### 核心方法
 Scheduler的核心功能就是操作Job、Trigger、Calendar、Listener等。包括addXXX、deleteXXX、pauseXXX、resumeXXX等。  
 
-![Schedualer 核心方法](../resources/quartz/images/scheduler_core.png "Schedualer 核心方法")  
+![Schedualer 核心方法](resources/quartz/images/scheduler_core.png "Schedualer 核心方法")  
 
 ## Job
 ### Job接口简介
@@ -42,13 +42,13 @@ Job就是定时任务实实在在执行的内容，足够单纯，仅仅包含�
 void execute(JobExecutionContext context) throws JobExecutionException;  
 ```  
 JobExecutionContext对象包含了当前任务执行的上下文环境，包括JobDetail、Trigger以及jobDataMap等。  
-![Job运行时环境](../resources/quartz/images/job_execution_context.png "Job运行时环境")  
+![Job运行时环境](resources/quartz/images/job_execution_context.png "Job运行时环境")  
 Job的执行并不是孤立封闭的，需用与外界交互。JobDataMap是一种扩展的Map<String，Object>结构，就是用来在任务调度器与任务执行之间传递数据。如果Job中包含了与JobDataMap中key值相对应的setter方法，那么Scheduler容器将会在当前Job创建后自动调用该setter方法，完成数据传递，而不用hardcode的从map中取值。  
 Scheduler控制在每次Trigger触发时创建Job实例。因此JobExecutionContext.JobDataMap只是外部Scheduler容器中JobDataMap的一个拷贝，即便修改Job中的JobDataMap也只是在当前Job执行的环境中生效，并不会对外部产生任何影响。  
 
 ### Job的派生
 Job下面又派生出两个子接口：InterruptableJob和StatefulJob  
-![Job体系结构](../resources/quartz/images/job.png "Job体系结构")  
+![Job体系结构](resources/quartz/images/job.png "Job体系结构")  
 InterruptableJob：可被阻断的Job，InterruptableJob收到Scheduler.interrupt请求，停止任务  
 StatefulJob：有状态Job，标识性接口，没有操作方法。StatefulJob与普通的Job（无状态Job）从根本上有两点不同：  
 	1. JobDataMap是共享的，即在Job中对JobDataMap的操作，将会被保存下来，其他Job拿到的将是被修改过的JobDataMap。  
@@ -57,12 +57,12 @@ StatefulJob已被DisallowConcurrentExecution/PersistJobDataAfterExecution注解�
 
 ### Job的创建
 Job的创建由专门的工厂来完成  
-![Job Factory结构](../resources/quartz/images/job_factory.png "Job Factory结构")  
+![Job Factory结构](resources/quartz/images/job_factory.png "Job Factory结构")  
 上面已经提到，Job的创建受Scheduler控制，因此不需要外部参与。  
 
 ## JobDetail
 JobDetail用于保存Job相关的属性信息  
-![JobDetail结构](../resources/quartz/images/jobdetail.png "JobDetail结构")  
+![JobDetail结构](resources/quartz/images/jobdetail.png "JobDetail结构")  
 - JobKey唯一确定了一个Job  
 - JobDataMap用于存储Job执行时必要的业务信息  
 - JobDetail保存的仅仅是Job接口的Class对象，而非具体的实例。  
@@ -74,7 +74,7 @@ JobDetail job = JobBuilder.newJob(HelloJob.class)
 ```
 ## Trigger
 Trigger描述了Job的触发规则。  
-![Trigger](../resources/quartz/images/trigger.png "Trigger")  
+![Trigger](resources/quartz/images/trigger.png "Trigger")  
 - TriggerKey(group,name)唯一标识了Scheduler中的Trigger  
 - JobKey指向了该Trigger作用的Job  
 - 一个Trigger仅能对应一个Job，而一个Job可以对应多个Trigger  
@@ -93,7 +93,7 @@ Trigger描述了Job的触发规则。
 - STATE_ERROR：  
 
 ### Trigger的分类
-![Trigger的分类](../resources/quartz/images/trigger_hierarchy.png "Trigger的分类")  
+![Trigger的分类](resources/quartz/images/trigger_hierarchy.png "Trigger的分类")  
 常见的两种Trigger为SimpleTrigger和CronTrigger.  
 
 ### SimpleTrigger
@@ -161,21 +161,21 @@ JobStroe的实现包括：
 - TerracottaJobStore：  
 
 ### RAMJobStore
-![RAMJobStore](../resources/quartz/images/ram_job_store.png "RAMJobStore")  
+![RAMJobStore](resources/quartz/images/ram_job_store.png "RAMJobStore")  
 #### JobDetail的存储载体：  
 JobWrapper:  
-![JobWrapper](../resources/quartz/images/job_wrapper.png "JobWrapper")  
+![JobWrapper](resources/quartz/images/job_wrapper.png "JobWrapper")  
 ```java
 // 以JobDetail的group为key，存储JobKey<->JobWrapper形式的Map结构的Map
 HashMap<String, HashMap<JobKey, JobWrapper>> jobsByGroup
 // 以JobKey为Key，存储JobWrapper的Map
 HashMap<JobKey, JobWrapper> jobsByKey
 ```  
-![jobstore_job](../resources/quartz/images/jobstore_ram_job.png "jobstore_job")  
+![jobstore_job](resources/quartz/images/jobstore_ram_job.png "jobstore_job")  
 
 #### Trigger的存储载体:  
 TriggerWrapper:  
-![TriggerWrapper](../resources/quartz/images/trigger_wrapper.png "TriggerWrapper")  
+![TriggerWrapper](resources/quartz/images/trigger_wrapper.png "TriggerWrapper")  
 ```java
 // 存储所有的TriggerWrapper
 ArrayList<TriggerWrapper> triggers
@@ -186,26 +186,26 @@ HashMap<TriggerKey, TriggerWrapper> triggersByKey
 // 即将被触发的Trigger
 TreeSet<TriggerWrapper> timeTriggers
 ```
-![jobstore_trigger](../resources/quartz/images/jobstore_ram_trigger.png "jobstore_trigger")  
+![jobstore_trigger](resources/quartz/images/jobstore_ram_trigger.png "jobstore_trigger")  
 
 ### JDBCJobStore
 
 
 ## 代码解析
 ### 创建Scheduler
-![创建Scheduler](../resources/quartz/images/create_scheduler.png "创建Scheduler")  
+![创建Scheduler](resources/quartz/images/create_scheduler.png "创建Scheduler")  
 
 ### JobStore
 #### TransactionCallback接口
 TransactionCallback接口提供业务执行的事务场景，用于执行特定的数据库CRUD JobDetail、Trigger等操作，只关心做什么，事务的控制交由调用者来管理。  
 TransactionCallback接口结构图：  
-![TransactionCallback接口](../resources/quartz/images/jobstore_transaction_callback.png "TransactionCallback接口")  
+![TransactionCallback接口](resources/quartz/images/jobstore_transaction_callback.png "TransactionCallback接口")  
 TransactionCallback接口实例：  
-![TransactionCallback接口实例](../resources/quartz/images/jobstore_transaction_callback_code.png "TransactionCallback接口实例")  
+![TransactionCallback接口实例](resources/quartz/images/jobstore_transaction_callback_code.png "TransactionCallback接口实例")  
 TransactionCallback接口调用：  
-![TransactionCallback接口调用](../resources/quartz/images/jobstore_transaction_caller_code.png "TransactionCallback接口调用")  
+![TransactionCallback接口调用](resources/quartz/images/jobstore_transaction_caller_code.png "TransactionCallback接口调用")  
 ##### 添加JobDetail
-![添加JobDetail](../resources/quartz/images/jdbcjobstore_store_job.png "添加JobDetail")  
+![添加JobDetail](resources/quartz/images/jdbcjobstore_store_job.png "添加JobDetail")  
 SQL Detail  
 - SELECT_JOB_EXISTENCE  
 ```SQL
@@ -220,7 +220,7 @@ UPDATE QRTZ_JOB_DETAILS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME 
 INSERT INTO QRTZ_JOB_DETAILS (SCHED_NAME, JOB_NAME, JOB_GROUP, DESCRIPTION, JOB_CLASS_NAME, IS_DURABLE, IS_NONCONCURRENT, IS_UPDATE_DATA, REQUESTS_RECOVERY, JOB_DATA)  VALUES(XXX)
 ```
 ##### 暂停Job
-![暂停Job](../resources/quartz/images/jdbcjobstore_pause_job.png "暂停Job")  
+![暂停Job](resources/quartz/images/jdbcjobstore_pause_job.png "暂停Job")  
 *Trigger的状态*： 
 当前Job下所有Trigger:  
 - 如果当前Trigger的状态为Waiting或Acquired，则改为Paused
@@ -239,7 +239,7 @@ SQL Detail
  UPDATE QRTZ_TRIGGERS SET TRIGGER_STATE = 'PAUSED/PAUSED_BLOCKED' WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
 ```
 ##### 重新开启Job
-![重新开启Job](../resources/quartz/images/jdbcjobstore_resume_job.png "重新开启Job")  
+![重新开启Job](resources/quartz/images/jdbcjobstore_resume_job.png "重新开启Job")  
 *Trigger的状态*:  
 当前Job下所有Trigger:  
 - 将当前Trigger的状态改为Waiting或Blocked
@@ -258,7 +258,7 @@ SQL Detail
 UPDATE QRTZ_TRIGGERS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
 ```
 ##### 添加Trigger
-![添加Trigger](../resources/quartz/images/jdbcjobstore_store_trigger.png "添加Trigger")  
+![添加Trigger](resources/quartz/images/jdbcjobstore_store_trigger.png "添加Trigger")  
 *注意*：  
 - 被暂停的Group存放在QRTZ_PAUSED_TRIGGER_GRPS表中，如果所有的Group都暂停，那么表中TRIGGER_GROUP字段值为“_$_ALL_GROUPS_PAUSED_$_”  
 *Trigger的状态*：  
