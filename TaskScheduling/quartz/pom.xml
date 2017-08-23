@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.study</groupId>
+		<artifactId>task-scheduling</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>quartz</artifactId>
+	<packaging>pom</packaging>
+	<modules>
+		<module>quartz-core</module>
+	</modules>
+
+	<properties>
+		<version.quartz>2.2.2</version.quartz>
+		<version.slf4j>1.6.6</version.slf4j>
+		<version.slf4j-log4j>1.6.6</version.slf4j-log4j>
+		<version.log4j>1.2.17</version.log4j>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${version.quartz}</version>
+		</dependency>
+		<!-- log s -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${version.slf4j-log4j}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${version.log4j}</version>
+		</dependency>
+		<!-- log e -->
+	</dependencies>
+</project>
