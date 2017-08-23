@@ -7,32 +7,36 @@
 - Trigger 描述Job执行的时间触发规则
 - JobStore 接口，存放Job、Trigger等信息
 
-##Scheduler
+## Scheduler
 Scheduler是一个任务调度器，保存JobDetail和Trigger的信息。 在Trigger触发时，执行特定任务。
 
-###创建
+### 创建
 Scheduler由SchedulerFactory创建。  
 SchedulerFactory有两个默认实现StdSchedulerFactory和DirectSchedulerFactory。  
 ![Schedualer Factory继承体系](../resources/quartz/images/scheduler_factory.png "Schedualer Factory继承体系")  
+Scheduler的创建过程包括：
+- 1. 读取配置文件, 配置文件中需要配置scheduler、线程池、jobStore、jobListener、triggerListenner、插件等。配置文件的读取过程如下：
+	- 读取参数系统参数System中配置的org.quartz.properties指定的文件
+	- 如果找不到则读取项目Classpath目录下的quartz.properties配置文件
+	- 如果找不到则读取quartz jar包中默认的配置文件quartz.properties
+- 2. 从SchedulerRepository中根据名称读取已经创建的scheduler，
+- 3. 如果没有则重新创建一个，并保存在SchedulerRepository中。
 
-StdSchedulerFactory
-DirectSchedulerFactory
-
-###存储
+### 存储
 Scheduler存储在单例的SchedulerRepository中。    
 ![Schedualer Repository类图](../resources/quartz/images/scheduler_repository.png "Schedualer Repository类图")  
  
-###生命周期
-Scheduler的生命周期开始于start()，结束于shutdown()方法。  
+### 生命周期
+Scheduler的生命周期开始于其被创建时，结束于shutdown()方法调用。一旦对象创建完成，就可以用来操作Jobs和Triggers，包括添加、删除、查询等。但只有在Scheduler start()被调用后，才会按照Trigger定义的触发规则执行Job的内容。  
 ![Schedualer 生命周期](../resources/quartz/images/scheduler_lifecycle.png "Schedualer 生命周期")  
 
-###核心方法
+### 核心方法
 Scheduler的核心功能就是操作Job、Trigger、Calendar、Listener等。包括addXXX、deleteXXX、pauseXXX、resumeXXX等。  
 
 ![Schedualer 核心方法](../resources/quartz/images/scheduler_core.png "Schedualer 核心方法")  
 
-##Job
-###Job接口简介
+## Job
+### Job接口简介
 Job就是定时任务实实在在执行的内容，足够单纯，仅仅包含一个执行方法:  
 ```java  
 void execute(JobExecutionContext context) throws JobExecutionException;  
@@ -42,7 +46,7 @@ JobExecutionContext对象包含了当前任务执行的上下文环境，包括J
 Job的执行并不是孤立封闭的，需用与外界交互。JobDataMap是一种扩展的Map<String，Object>结构，就是用来在任务调度器与任务执行之间传递数据。如果Job中包含了与JobDataMap中key值相对应的setter方法，那么Scheduler容器将会在当前Job创建后自动调用该setter方法，完成数据传递，而不用hardcode的从map中取值。  
 Scheduler控制在每次Trigger触发时创建Job实例。因此JobExecutionContext.JobDataMap只是外部Scheduler容器中JobDataMap的一个拷贝，即便修改Job中的JobDataMap也只是在当前Job执行的环境中生效，并不会对外部产生任何影响。  
 
-###Job的派生
+### Job的派生
 Job下面又派生出两个子接口：InterruptableJob和StatefulJob  
 ![Job体系结构](../resources/quartz/images/job.png "Job体系结构")  
 InterruptableJob：可被阻断的Job，InterruptableJob收到Scheduler.interrupt请求，停止任务  
@@ -51,12 +55,12 @@ StatefulJob：有状态Job，标识性接口，没有操作方法。StatefulJob�
 	2. 基于第一条原因，StatefulJob是不允许并发执行的。  
 StatefulJob已被DisallowConcurrentExecution/PersistJobDataAfterExecution注解取代  
 
-###Job的创建
+### Job的创建
 Job的创建由专门的工厂来完成  
 ![Job Factory结构](../resources/quartz/images/job_factory.png "Job Factory结构")  
 上面已经提到，Job的创建受Scheduler控制，因此不需要外部参与。  
 
-##JobDetail
+## JobDetail
 JobDetail用于保存Job相关的属性信息  
 ![JobDetail结构](../resources/quartz/images/jobdetail.png "JobDetail结构")  
 - JobKey唯一确定了一个Job  
@@ -68,7 +72,7 @@ JobDetail job = JobBuilder.newJob(HelloJob.class)
 					.withIdentity(jobKey)
 					.build();
 ```
-##Trigger
+## Trigger
 Trigger描述了Job的触发规则。  
 ![Trigger](../resources/quartz/images/trigger.png "Trigger")  
 - TriggerKey(group,name)唯一标识了Scheduler中的Trigger  
@@ -79,7 +83,7 @@ Trigger描述了Job的触发规则。
 - Misfire Instructions：没来得及执行的机制。同一时间trigger数量过多超过可获得的线程资源，导致部分trigger无法执行。不同类型的Trigger拥有不同的机制。当Scheduler启动时候，首先找到没来得及执行的trigger，再根据不同类型trigger各自的处理策略处理  
 - Calendar：Quartz Calendar类型而不是java.util.Calendar类型。用于排除Trigger日程表中的特定时间范围，比如原本每天执行的任务，排除非工作日  
 
-###Trigger的几种状态
+### Trigger的几种状态
 - STATE_WAITING（默认）: 等待触发
 - STATE_ACQUIRED：  
 - STATE_COMPLETE：  
@@ -88,19 +92,19 @@ Trigger描述了Job的触发规则。
 - STATE_PAUSED_BLOCKED：  
 - STATE_ERROR：  
 
-###Trigger的分类
+### Trigger的分类
 ![Trigger的分类](../resources/quartz/images/trigger_hierarchy.png "Trigger的分类")  
 常见的两种Trigger为SimpleTrigger和CronTrigger.  
 
-###SimpleTrigger
+### SimpleTrigger
 SimpleTrigger支持在特定时间点一次性执行或延迟执行N次，使用TriggerBuilder和SimpleScheduleBuilder创建
 SimpleTrigger包含的属性为：  
-- startTime  
+- startTime  开始时间
 - endTime 如果指定的话，将会覆盖repeat count  
 - repeat count 重复次数 >=0 int  
 - repeat interval 时间间隔(毫秒) >=0 long  
 
-###CronTrigger  
+### CronTrigger  
 CronTrigger支持多次重复性复杂情况，支持Cron表达式，使用TriggerBuilder和CronScheduleBuilder创建。  
 Cron表达式由7部分组成，分别是秒 分 时 日期 月份 星期 年（可选），空格间隔。  
 
@@ -149,16 +153,16 @@ Cron表达式由7部分组成，分别是秒 分 时 日期 月份 星期 年（
 星期：^(\\*|L|\\?|[1-7](([,|\-|\/|\#][1-7])*|[LC]))$  
 年：^(\\*?|2[0-9]{3}([,|\-|\/]2[0-9]{3})*)$</pre>  
 
-##Job Store
-Job Store用于保存jobs, triggers对应数据。JobStore的配置应在Quartz的配置文件中配置，代码中应该避免直接操作JobStore实例  
+## Job Store
+Job Store用于保存jobs, triggers等对应数据。JobStore的配置应在Quartz的配置文件中配置，代码中应该避免直接操作JobStore实例  
 JobStroe的实现包括：  
 - RAMJobStore：把所有数据保存在内容中，速度快但没能持久化。配置org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore  
 - JDBCJobStore：通过jdbc把数据保存在数据库中  
 - TerracottaJobStore：  
 
-###RAMJobStore
+### RAMJobStore
 ![RAMJobStore](../resources/quartz/images/ram_job_store.png "RAMJobStore")  
-####JobDetail的存储载体：  
+#### JobDetail的存储载体：  
 JobWrapper:  
 ![JobWrapper](../resources/quartz/images/job_wrapper.png "JobWrapper")  
 ```java
@@ -169,7 +173,7 @@ HashMap<JobKey, JobWrapper> jobsByKey
 ```  
 ![jobstore_job](../resources/quartz/images/jobstore_ram_job.png "jobstore_job")  
 
-####Trigger的存储载体:  
+#### Trigger的存储载体:  
 TriggerWrapper:  
 ![TriggerWrapper](../resources/quartz/images/trigger_wrapper.png "TriggerWrapper")  
 ```java
@@ -184,15 +188,15 @@ TreeSet<TriggerWrapper> timeTriggers
 ```
 ![jobstore_trigger](../resources/quartz/images/jobstore_ram_trigger.png "jobstore_trigger")  
 
-###JDBCJobStore
+### JDBCJobStore
 
 
-##代码解析
-###创建Scheduler
+## 代码解析
+### 创建Scheduler
 ![创建Scheduler](../resources/quartz/images/create_scheduler.png "创建Scheduler")  
 
-###JobStore
-####TransactionCallback接口
+### JobStore
+#### TransactionCallback接口
 TransactionCallback接口提供业务执行的事务场景，用于执行特定的数据库CRUD JobDetail、Trigger等操作，只关心做什么，事务的控制交由调用者来管理。  
 TransactionCallback接口结构图：  
 ![TransactionCallback接口](../resources/quartz/images/jobstore_transaction_callback.png "TransactionCallback接口")  
@@ -200,7 +204,7 @@ TransactionCallback接口实例：
 ![TransactionCallback接口实例](../resources/quartz/images/jobstore_transaction_callback_code.png "TransactionCallback接口实例")  
 TransactionCallback接口调用：  
 ![TransactionCallback接口调用](../resources/quartz/images/jobstore_transaction_caller_code.png "TransactionCallback接口调用")  
-#####添加JobDetail
+##### 添加JobDetail
 ![添加JobDetail](../resources/quartz/images/jdbcjobstore_store_job.png "添加JobDetail")  
 SQL Detail  
 - SELECT_JOB_EXISTENCE  
@@ -215,7 +219,7 @@ UPDATE QRTZ_JOB_DETAILS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND JOB_NAME 
 ```SQL
 INSERT INTO QRTZ_JOB_DETAILS (SCHED_NAME, JOB_NAME, JOB_GROUP, DESCRIPTION, JOB_CLASS_NAME, IS_DURABLE, IS_NONCONCURRENT, IS_UPDATE_DATA, REQUESTS_RECOVERY, JOB_DATA)  VALUES(XXX)
 ```
-#####暂停Job
+##### 暂停Job
 ![暂停Job](../resources/quartz/images/jdbcjobstore_pause_job.png "暂停Job")  
 *Trigger的状态*： 
 当前Job下所有Trigger:  
@@ -234,7 +238,7 @@ SQL Detail
 ```SQL
  UPDATE QRTZ_TRIGGERS SET TRIGGER_STATE = 'PAUSED/PAUSED_BLOCKED' WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
 ```
-#####重新开启Job
+##### 重新开启Job
 ![重新开启Job](../resources/quartz/images/jdbcjobstore_resume_job.png "重新开启Job")  
 *Trigger的状态*:  
 当前Job下所有Trigger:  
@@ -253,7 +257,7 @@ SQL Detail
 ```SQL
 UPDATE QRTZ_TRIGGERS SET XXX WHERE SCHED_NAME = 'TestScheduler' AND TRIGGER_NAME = 'trigger' AND TRIGGER_GROUP = 'default'
 ```
-#####添加Trigger
+##### 添加Trigger
 ![添加Trigger](../resources/quartz/images/jdbcjobstore_store_trigger.png "添加Trigger")  
 *注意*：  
 - 被暂停的Group存放在QRTZ_PAUSED_TRIGGER_GRPS表中，如果所有的Group都暂停，那么表中TRIGGER_GROUP字段值为“_$_ALL_GROUPS_PAUSED_$_”  

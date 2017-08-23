@@ -40,5 +40,7 @@ public class QuartzHelloWorld {
 			e.printStackTrace();
 		}
 		sched.deleteJob(new JobKey("myJob", "group1"));
+		System.out.println("myJob has been deleted");
+		sched.shutdown();
 	}
 }
