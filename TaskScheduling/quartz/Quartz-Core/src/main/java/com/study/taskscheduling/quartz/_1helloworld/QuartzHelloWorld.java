@@ -14,13 +14,20 @@ public class QuartzHelloWorld {
 
 	public static void main(String[] args) throws SchedulerException {
 
-		SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
+		SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory("_quartz.properties");
 
 		Scheduler sched = schedFact.getScheduler();
 
 		// define the job and tie it to our HelloJob class
 		JobDetail job = JobBuilder.newJob(HelloJob.class).withIdentity("myJob", "group1").build();
 
+		
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
 		// Trigger the job to run now, and then every 40 seconds
 		Trigger trigger = TriggerBuilder
 				.newTrigger()
