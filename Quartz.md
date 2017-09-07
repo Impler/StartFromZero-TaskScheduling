@@ -38,10 +38,8 @@ Scheduler的核心功能就是操作Job、Trigger、Calendar、Listener等。包
 
 ## Job
 ### Job接口简介
-Job就是定时任务实实在在执行的内容，足够单纯，仅仅包含一个执行方法:  
-```java  
-void execute(JobExecutionContext context) throws JobExecutionException;  
-```  
+Job就是定时任务实实在在执行的内容，足够单纯，仅仅包含一个执行方法。  
+![Job](resources/quartz/images/job.png "Job")  
 JobExecutionContext对象包含了当前任务执行的上下文环境，包括JobDetail、Trigger以及jobDataMap等。  
 ![Job运行时环境](resources/quartz/images/job_execution_context.png "Job运行时环境")  
 Job的执行并不是孤立封闭的，需用与外界交互。JobDataMap是一种扩展的Map<String，Object>结构，就是用来在任务调度器与任务执行之间传递数据。如果Job中包含了与JobDataMap中key值相对应的setter方法，那么Scheduler容器将会在当前Job创建后自动调用该setter方法，完成数据传递，而不用hardcode的从map中取值。  
@@ -49,7 +47,7 @@ Scheduler控制在每次Trigger触发时创建Job实例。因此JobExecutionCont
 
 ### Job的派生
 Job下面又派生出两个子接口：InterruptableJob和StatefulJob  
-![Job体系结构](resources/quartz/images/job.png "Job体系结构")  
+![Job体系结构](resources/quartz/images/job_hierarchy.png "Job体系结构")  
 InterruptableJob：可被阻断的Job，InterruptableJob收到Scheduler.interrupt请求，停止任务  
 StatefulJob：有状态Job，标识性接口，没有操作方法。StatefulJob与普通的Job（无状态Job）从根本上有两点不同：  
 	1. JobDataMap是共享的，即在Job中对JobDataMap的操作，将会被保存下来，其他Job拿到的将是被修改过的JobDataMap。  
