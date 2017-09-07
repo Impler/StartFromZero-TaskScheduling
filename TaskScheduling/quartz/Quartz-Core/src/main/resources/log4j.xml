@@ -9,14 +9,22 @@
       <param name="ConversionPattern" value="%d{YYYY-MM-dd hh:mm:ss.SSS} [%p] %t [%c]%m%n"/>
     </layout>
   </appender>
+  <appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
+      <param name="threshold" value="debug" />
+      <param name="file" value="log.log"/>
+      <layout class="org.apache.log4j.PatternLayout">
+          <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss}|%t|%-5p|%l %m%n"/>
+      </layout>
+  </appender>
 
 
  <logger name="org.quartz">
-   <level value="info" />
+   <level value="debug" />
+    <appender-ref ref="file" />
  </logger>
 
   <root>
-    <level value="info" />
+    <level value="debug" />
     <appender-ref ref="default" />
   </root>
 

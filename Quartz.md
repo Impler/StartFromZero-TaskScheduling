@@ -9,6 +9,8 @@
 
 ## Scheduler
 Scheduler是一个任务调度器，保存JobDetail和Trigger的信息。 在Trigger触发时，执行特定任务。
+![Schedualer体系](resources/quartz/images/scheduler_hierarchy.png "Schedualer体系")  
+实现了`org.quartz.Scheduler`接口的StdSchedule实际只是QuartzScheduler的静态代理，后者实现了Scheduler所有操作。  
 
 ### 创建
 Scheduler由SchedulerFactory创建。  
@@ -32,7 +34,6 @@ Scheduler的生命周期开始于其被创建时，结束于shutdown()方法调�
 
 ### 核心方法
 Scheduler的核心功能就是操作Job、Trigger、Calendar、Listener等。包括addXXX、deleteXXX、pauseXXX、resumeXXX等。  
-
 ![Schedualer 核心方法](resources/quartz/images/scheduler_core.png "Schedualer 核心方法")  
 
 ## Job

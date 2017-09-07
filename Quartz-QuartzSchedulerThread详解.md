@@ -149,7 +149,7 @@ ORDER BY
 
 ## 3 等待Trigger触发时间到来
 因为上一步取得的Triggers是按时间排序的集合，所以取集合中的第一个，即触发时间最早的Trigger，等待其触发时间的到来。老套路while循环+wait实现。  
-不过需要注意的是，这此期间，可能有一些新的情况发生，比如说，新增了一个Trigger，并且该新增的Trigger笔前面获取的触发时间都早，那么就需要将上面获取的过期的Trigger释放掉(状态变化:STATE_ACQUIRED-->STATE_WAITING)，然后重新查询Trggers
+不过需要注意的是，在此期间，可能有一些新的情况发生，比如说，新增了一个Trigger，并且该新增的Trigger笔前面获取的触发时间都早，那么就需要将上面获取的Trigger释放掉(状态变化:STATE_ACQUIRED-->STATE_WAITING)，然后重新查询Trggers
 ```java
 now = System.currentTimeMillis();
 long triggerTime = triggers.get(0).getNextFireTime().getTime();
