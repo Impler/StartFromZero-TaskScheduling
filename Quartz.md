@@ -2,10 +2,10 @@
 
 ## Quartz 主要API
 - Scheduler 任务调度器，按照特定的触发规则，自动执行任务
-- Job 接口，通过实现该接口定义需要执行的任务
-- JobDetail 用于定义Job实例，包含了job的基本信息
+- Job 接口，定义需要执行的任务
+- JobDetail 包含job的基本信息
 - Trigger 描述Job执行的时间触发规则
-- JobStore 接口，存放Job、Trigger等信息
+- JobStore 存放Job、Trigger等信息
 
 ## Scheduler
 Scheduler是一个任务调度器，保存JobDetail和Trigger的信息。 在Trigger触发时，执行特定任务。
@@ -57,7 +57,7 @@ StatefulJob已被DisallowConcurrentExecution/PersistJobDataAfterExecution注解�
 ### Job的创建
 Job的创建由专门的工厂来完成  
 ![Job Factory结构](resources/quartz/images/job_factory.png "Job Factory结构")  
-上面已经提到，Job的创建受Scheduler控制，因此不需要外部参与。  
+Job是在Quartz内部创建，受Scheduler控制，因此不需要外部参与。  
 
 ## JobDetail
 JobDetail用于保存Job相关的属性信息  
@@ -156,9 +156,12 @@ Cron表达式由7部分组成，分别是秒 分 时 日期 月份 星期 年（
 ## Job Store
 Job Store用于保存jobs, triggers等对应数据。JobStore的配置应在Quartz的配置文件中配置，代码中应该避免直接操作JobStore实例  
 JobStroe的实现包括：  
-- RAMJobStore：把所有数据保存在内容中，速度快但没能持久化。配置org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore  
-- JDBCJobStore：通过jdbc把数据保存在数据库中  
-- TerracottaJobStore：  
+- RAMJobStore：把所有数据保存在内容中，速度快但不能持久化。配置org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore  
+- JobStoreSupport：通过jdbc，以数据库作为存储媒介  
+	- JobStoreCMT: 使用应用服务器提供事务管理机制
+	- JobStoreTX: 不依赖与外部容器，可以自己提交、回滚事务
+
+![JobStore](resources/quartz/images/jobstore.png "JobStore")  
 
 ### RAMJobStore
 ![RAMJobStore](resources/quartz/images/ram_job_store.png "RAMJobStore")  
@@ -187,8 +190,6 @@ HashMap<TriggerKey, TriggerWrapper> triggersByKey
 TreeSet<TriggerWrapper> timeTriggers
 ```
 ![jobstore_trigger](resources/quartz/images/jobstore_ram_trigger.png "jobstore_trigger")  
-
-### JDBCJobStore
 
 
 ## 代码解析
